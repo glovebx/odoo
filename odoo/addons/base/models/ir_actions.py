@@ -277,6 +277,9 @@ class IrActionsActWindow(models.Model):
             "context", "domain", "filter", "groups_id", "limit", "res_id",
             "res_model", "search_view", "search_view_id", "target", "view_id",
             "view_mode", "views",
+            # `flags` is not a real field of ir.actions.act_window but is used
+            # to give the parameters to generate the action
+            "flags"
         }
 
 
@@ -662,10 +665,10 @@ class IrServerObjectLines(models.Model):
                 try:
                     value = int(value)
                     if not self.env[line.col1.relation].browse(value).exists():
-                        record = self.env[line.col1.relation]._search([], limit=1)
+                        record = list(self.env[line.col1.relation]._search([], limit=1))
                         value = record[0] if record else 0
                 except ValueError:
-                    record = self.env[line.col1.relation]._search([], limit=1)
+                    record = list(self.env[line.col1.relation]._search([], limit=1))
                     value = record[0] if record else 0
                 line.resource_ref = '%s,%s' % (line.col1.relation, value)
             else:
